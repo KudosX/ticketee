@@ -4,8 +4,7 @@ RSpec.feature "Users can comment on tickets" do
   let(:user) { FactoryGirl.create(:user) }
 
   let(:project) { FactoryGirl.create(:project) }
-  let(:ticket) { FactoryGirl.create(:ticket,
-                                    project: project, author: user) }
+  let(:ticket) { FactoryGirl.create(:ticket, project: project, author: user) }
   before do
     login_as(user)
     assign_role!(user, :manager, project)
@@ -43,7 +42,13 @@ RSpec.feature "Users can comment on tickets" do
     within("#comments") do
       expect(page).to have_content "state changed to Open"
     end
-
   end
 
+
+  scenario "but cannot change the state without permission" do
+    assign_role!(user, :editor, project)
+    visit project_ticket_path(project, ticket)
+
+    expect(page).not_to have_select "State"
+  end
 end
