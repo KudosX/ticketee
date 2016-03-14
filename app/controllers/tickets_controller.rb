@@ -2,6 +2,16 @@ class TicketsController < ApplicationController
   before_action :set_project
   before_action :set_ticket, only: [:show, :edit, :update, :destroy]
 
+  def search
+    authorize @project, :show?
+    if params[:search].present?
+      @tickets = @project.tickets.search(params[:search])
+    else
+      @tickets = @project.tickets
+    end
+    render "projects/show"
+  end
+
   def new
     @ticket = @project.tickets.build
     authorize @ticket, :create?
@@ -55,7 +65,8 @@ class TicketsController < ApplicationController
     flash[:notice] = "Ticket has been deleted."
     redirect_to @project
   end
-  
+
+
 
 private
 
